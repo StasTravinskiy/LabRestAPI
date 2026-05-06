@@ -1,0 +1,115 @@
+openapi: 3.0.3
+info:
+  title: Library API
+  description: Мок API для бібліотеки з використанням Stoplight Prism
+  version: 1.0.0
+
+paths:
+  /books:
+    get:
+      summary: Отримати список всіх книг
+      tags:
+        - Books
+      responses:
+        '200':
+          description: Успішно отримано список книг
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+              # Prism буде використовувати цей приклад для відповіді!
+              example:
+                - id: "123e4567-e89b-12d3-a456-426614174000"
+                  title: "Кобзар"
+                  author: "Тарас Шевченко"
+                  year: 1840
+                  status: "наявна в бібліотеці"
+                - id: "987e6543-e21b-34d5-c678-426614174111"
+                  title: "Тіні забутих предків"
+                  author: "Михайло Коцюбинський"
+                  year: 1911
+                  status: "видана комусь"
+
+    post:
+      summary: Додати нову книгу
+      tags:
+        - Books
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookCreate'
+      responses:
+        '201':
+          description: Книгу успішно створено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+              example:
+                id: "555e4567-e89b-12d3-a456-426614174999"
+                title: "Тигролови"
+                author: "Іван Багряний"
+                year: 1944
+                status: "наявна в бібліотеці"
+
+  /books/{book_id}:
+    get:
+      summary: Отримати книгу за ID
+      tags:
+        - Books
+      parameters:
+        - name: book_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Дані знайденої книги
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+              example:
+                id: "123e4567-e89b-12d3-a456-426614174000"
+                title: "Кобзар"
+                author: "Тарас Шевченко"
+                year: 1840
+                status: "наявна в бібліотеці"
+        '404':
+          description: Книгу не знайдено
+
+components:
+  schemas:
+    BookCreate:
+      type: object
+      required:
+        - title
+        - author
+        - year
+      properties:
+        title:
+          type: string
+        author:
+          type: string
+        year:
+          type: integer
+        status:
+          type: string
+          default: "наявна в бібліотеці"
+
+    Book:
+      allOf:
+        - $ref: '#/components/schemas/BookCreate'
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              type: string
+              format: uuid

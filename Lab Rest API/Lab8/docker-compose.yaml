@@ -1,0 +1,10 @@
+services:
+  prism_mock:
+    image: stoplight/prism:5
+    container_name: library_prism_mock
+    ports:
+      - "4010:4010"
+    volumes:
+      - ./api.yaml:/usr/src/prism/api.yaml:ro
+    # Додали -m false, щоб обійти баг Prism
+    command: mock -h 0.0.0.0 -m false /usr/src/prism/api.yaml
